@@ -1,3 +1,3 @@
 [submodule "Unity"]
-	path = Unity
+	path = tp-tdd/Unity
 	url = https://github.com/ThrowTheSwitch/Unity.git
