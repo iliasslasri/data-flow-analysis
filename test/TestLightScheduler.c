@@ -11,4 +11,7 @@ void tearDown(void)
 
 }
 
-// TODO: Write some tests...
+void testThatFailsBecauseItDoesNotTestAnything(void)
+{
+    TEST_ASSERT_MESSAGE( 0, "Go write some real tests!" );
+}

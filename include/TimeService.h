@@ -23,6 +23,7 @@ typedef struct {
 } Time;
 
 void TimeService_init(void);
+void TimeService_destroy(void);
 void TimeService_getTime(Time *time);
 void TimeService_startPeriodicAlarm(int seconds, void (*callback)(void));
 void TimeService_stopPeriodicAlarm(int seconds);
