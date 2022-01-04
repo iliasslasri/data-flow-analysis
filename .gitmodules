@@ -1,3 +1,6 @@
 [submodule "Unity"]
 	path = tp-tdd/Unity
 	url = https://github.com/ThrowTheSwitch/Unity.git
+[submodule "tp-tdd/CMock"]
+	path = tp-tdd/CMock
+	url = https://github.com/ThrowTheSwitch/CMock.git
