@@ -1,0 +1,8 @@
+fun main
+begin
+  int a = 7;
+  while (12 < 10) do 
+    a = 1;
+  end;
+  return a;
+end

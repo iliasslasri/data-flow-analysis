@@ -1,0 +1,8 @@
+fun main
+begin
+  int x = 5;
+  if x != 5 then
+    x = 9;
+  end;
+  return x;
+end
