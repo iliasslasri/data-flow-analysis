@@ -54,10 +54,11 @@ add_executable(while-run
 
 add_executable(while-analysis
   src/WhileAnalysis.cc
-  src/WhileConstantRegisterAnalysis.cc
+  # src/WhileConstantRegisterAnalysis.cc
   src/WhileDeadCodeAnalysis.cc
   src/WhileInterproceduralFramePointerAnalysis.cc
   src/WhileCFG.cc src/WhileInterpreter.cc
   WhileParser.cpp WhileLexer.cpp
   WhileBaseListener.cpp WhileListener.cpp
+  src/WhileConstantDeadAnalysis.cc
 )
