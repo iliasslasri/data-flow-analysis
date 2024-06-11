@@ -34,33 +34,97 @@ enum WhileConstantKind
   CONSTANT
 };
 
-struct WhileConstantValue
+struct WhileRangeValue
 {
   WhileConstantKind Kind;
   // modification
-  int Value;
+  int upperValue;
+  int lowerValue;
 
-  WhileConstantValue() : Kind(TOP), Value(0)
+  WhileRangeValue() : Kind(TOP), upperValue(0), lowerValue(0)
   {
   }
 
-  WhileConstantValue(int value) : Kind(CONSTANT), Value(value)
+  WhileRangeValue(int value) : Kind(CONSTANT), upperValue(value), lowerValue(value)
   {
   }
 
-  WhileConstantValue(WhileConstantKind kind) : Kind(kind), Value(0)
+  WhileRangeValue(WhileConstantKind kind) : Kind(kind), upperValue(0), lowerValue(0)
   {
   }
+
+  WhileRangeValue(WhileConstantKind kind, int min, int max) : Kind(kind), upperValue(max), lowerValue(min)
+  {
+  }
+
+  /// operations
+
+   // Overload + operator
+  WhileRangeValue operator+(const WhileRangeValue& other) const
+  {
+    return WhileRangeValue{Kind, lowerValue + other.lowerValue, upperValue + other.upperValue};
+  }
+
+  // Overload - operator
+  WhileRangeValue operator-(const WhileRangeValue& other) const
+  {
+    return WhileRangeValue{Kind, lowerValue - other.upperValue, upperValue - other.lowerValue};
+  }
+
+  // Overload * operator
+  WhileRangeValue operator*(const WhileRangeValue& other) const
+  {
+    int min = std::min({lowerValue * other.lowerValue, lowerValue * other.upperValue,
+                         upperValue * other.lowerValue, upperValue * other.upperValue});
+    int max = std::max({lowerValue * other.lowerValue, lowerValue * other.upperValue,
+                         upperValue * other.lowerValue, upperValue * other.upperValue});
+    return WhileRangeValue{Kind, min, max};
+  }
+
+  // Overload / operator
+  WhileRangeValue operator/(const WhileRangeValue& other) const
+  {
+    // Handle division by zero
+    if (other.lowerValue == 0 && other.upperValue == 0)
+    {
+      throw std::runtime_error("Division by zero");
+    }
+
+    int min = std::min({lowerValue / other.lowerValue, lowerValue / other.upperValue,
+                         upperValue / other.lowerValue, upperValue / other.upperValue});
+    int max = std::max({lowerValue / other.lowerValue, lowerValue / other.upperValue,
+                         upperValue / other.lowerValue, upperValue / other.upperValue});
+    return WhileRangeValue{Kind, min, max};
+  }
+
+  // Overload != operator
+  bool operator!=(const WhileRangeValue& other) const
+  {
+    return !(lowerValue == other.lowerValue && upperValue == other.upperValue);
+  }
+
+  // Overload < operator
+  bool operator<(const WhileRangeValue& other) const
+  {
+    return upperValue < other.lowerValue;
+  }
+
+  // Overload <= operator
+  bool operator<=(const WhileRangeValue& other) const
+  {
+    return upperValue <= other.lowerValue;
+  }
+
 };
 
-bool operator==(const WhileConstantValue &a, const WhileConstantValue &b)
+bool operator==(const WhileRangeValue &a, const WhileRangeValue &b)
 {
-  return (a.Kind == b.Kind && a.Value == b.Value);
+  return (a.Kind == b.Kind && a.upperValue == b.upperValue && a.lowerValue == b.lowerValue);
 }
 
-typedef std::map<int, WhileConstantValue> WhileConstantDomain;
+typedef std::map<int, WhileRangeValue> WhileConstantDomain;
 
-std::ostream &operator<<(std::ostream &s, const WhileConstantValue &v)
+std::ostream &operator<<(std::ostream &s, const WhileRangeValue &v)
 {
   switch (v.Kind)
   {
@@ -69,7 +133,7 @@ std::ostream &operator<<(std::ostream &s, const WhileConstantValue &v)
     case BOTTOM:
       return s << FRED << "⊥" << CRESET;
     case CONSTANT:
-      return s << FGREEN << v.Value << CRESET;
+      return s << FGREEN << "[" << v.lowerValue << ":" << v.upperValue << "]" << CRESET;
   };
   abort();
 }
@@ -107,7 +171,7 @@ struct WhileConstant : public WhileDataFlowAnalysis<WhileConstantDomain>
 
   static void updateRegisterOperand(const WhileInstr &instr, unsigned int idx,
                              WhileConstantDomain &result,
-                             WhileConstantValue value)
+                             WhileRangeValue value)
   {
     const WhileOperand &op = instr.Ops[idx];
     switch (op.Kind)
@@ -127,7 +191,7 @@ struct WhileConstant : public WhileDataFlowAnalysis<WhileConstantDomain>
     abort();
   }
 
-  static WhileConstantValue readDataOperand(const WhileInstr &instr,
+  static WhileRangeValue readDataOperand(const WhileInstr &instr,
                                             unsigned int idx,
                                             const WhileConstantDomain &input)
   {
@@ -190,11 +254,11 @@ struct WhileConstant : public WhileDataFlowAnalysis<WhileConstantDomain>
       {
         // Ops: OpD = OpA + OpB
         assert(ops.size() ==  3);
-        WhileConstantValue a = readDataOperand(instr, 1, input);
-        WhileConstantValue b = readDataOperand(instr, 2, input);
+        WhileRangeValue a = readDataOperand(instr, 1, input);
+        WhileRangeValue b = readDataOperand(instr, 2, input);
 
         if (a.Kind == CONSTANT && b.Kind == CONSTANT)
-          updateRegisterOperand(instr, 0, result, a.Value + b.Value);
+          updateRegisterOperand(instr, 0, result, a + b);
         else
           updateRegisterOperand(instr, 0, result, BOTTOM);
         break;
@@ -203,11 +267,11 @@ struct WhileConstant : public WhileDataFlowAnalysis<WhileConstantDomain>
       {
         // Ops: OpD = OpA - OpB
         assert(ops.size() ==  3);
-        WhileConstantValue a = readDataOperand(instr, 1, input);
-        WhileConstantValue b = readDataOperand(instr, 2, input);
+        WhileRangeValue a = readDataOperand(instr, 1, input);
+        WhileRangeValue b = readDataOperand(instr, 2, input);
 
         if (a.Kind == CONSTANT && b.Kind == CONSTANT)
-          updateRegisterOperand(instr, 0, result, a.Value - b.Value);
+          updateRegisterOperand(instr, 0, result, a - b);
         else
           updateRegisterOperand(instr, 0, result, BOTTOM);
         break;
@@ -216,11 +280,11 @@ struct WhileConstant : public WhileDataFlowAnalysis<WhileConstantDomain>
       {
         // Ops: OpD = OpA * OpB
         assert(ops.size() ==  3);
-        WhileConstantValue a = readDataOperand(instr, 1, input);
-        WhileConstantValue b = readDataOperand(instr, 2, input);
+        WhileRangeValue a = readDataOperand(instr, 1, input);
+        WhileRangeValue b = readDataOperand(instr, 2, input);
 
         if (a.Kind == CONSTANT && b.Kind == CONSTANT)
-          updateRegisterOperand(instr, 0, result, a.Value * b.Value);
+          updateRegisterOperand(instr, 0, result, a * b);
         else
           updateRegisterOperand(instr, 0, result, BOTTOM);
         break;
@@ -229,11 +293,11 @@ struct WhileConstant : public WhileDataFlowAnalysis<WhileConstantDomain>
       {
         // Ops: OpD = OpA / OpB
         assert(ops.size() ==  3);
-        WhileConstantValue a = readDataOperand(instr, 1, input);
-        WhileConstantValue b = readDataOperand(instr, 2, input);
+        WhileRangeValue a = readDataOperand(instr, 1, input);
+        WhileRangeValue b = readDataOperand(instr, 2, input);
 
         if (a.Kind == CONSTANT && b.Kind == CONSTANT)
-          updateRegisterOperand(instr, 0, result, a.Value / b.Value);
+          updateRegisterOperand(instr, 0, result, a / b);
         else
           updateRegisterOperand(instr, 0, result, BOTTOM);
         break;
@@ -242,11 +306,11 @@ struct WhileConstant : public WhileDataFlowAnalysis<WhileConstantDomain>
       {
         // Ops: OpD = OpA == OpB
         assert(ops.size() ==  3);
-        WhileConstantValue a = readDataOperand(instr, 1, input);
-        WhileConstantValue b = readDataOperand(instr, 2, input);
+        WhileRangeValue a = readDataOperand(instr, 1, input);
+        WhileRangeValue b = readDataOperand(instr, 2, input);
 
         if (a.Kind == CONSTANT && b.Kind == CONSTANT)
-          updateRegisterOperand(instr, 0, result, a.Value == b.Value);
+          updateRegisterOperand(instr, 0, result, a == b);
         else
           updateRegisterOperand(instr, 0, result, BOTTOM);
         break;
@@ -255,11 +319,11 @@ struct WhileConstant : public WhileDataFlowAnalysis<WhileConstantDomain>
       {
         // Ops: OpD = OpA != OpB
         assert(ops.size() ==  3);
-        WhileConstantValue a = readDataOperand(instr, 1, input);
-        WhileConstantValue b = readDataOperand(instr, 2, input);
+        WhileRangeValue a = readDataOperand(instr, 1, input);
+        WhileRangeValue b = readDataOperand(instr, 2, input);
 
         if (a.Kind == CONSTANT && b.Kind == CONSTANT)
-          updateRegisterOperand(instr, 0, result, a.Value != b.Value);
+          updateRegisterOperand(instr, 0, result, a != b);
         else
           updateRegisterOperand(instr, 0, result, BOTTOM);
         break;
@@ -268,11 +332,11 @@ struct WhileConstant : public WhileDataFlowAnalysis<WhileConstantDomain>
       {
         // Ops: OpD = OpA < OpB
         assert(ops.size() ==  3);
-        WhileConstantValue a = readDataOperand(instr, 1, input);
-        WhileConstantValue b = readDataOperand(instr, 2, input);
+        WhileRangeValue a = readDataOperand(instr, 1, input);
+        WhileRangeValue b = readDataOperand(instr, 2, input);
 
         if (a.Kind == CONSTANT && b.Kind == CONSTANT)
-          updateRegisterOperand(instr, 0, result, a.Value < b.Value);
+          updateRegisterOperand(instr, 0, result, a < b);
         else
           updateRegisterOperand(instr, 0, result, BOTTOM);
         break;
@@ -281,11 +345,11 @@ struct WhileConstant : public WhileDataFlowAnalysis<WhileConstantDomain>
       {
         // Ops: OpD = OpA <= OpB
         assert(ops.size() ==  3);
-        WhileConstantValue a = readDataOperand(instr, 1, input);
-        WhileConstantValue b = readDataOperand(instr, 2, input);
+        WhileRangeValue a = readDataOperand(instr, 1, input);
+        WhileRangeValue b = readDataOperand(instr, 2, input);
 
         if (a.Kind == CONSTANT && b.Kind == CONSTANT)
-          updateRegisterOperand(instr, 0, result, a.Value <= b.Value);
+          updateRegisterOperand(instr, 0, result, a <= b);
         else
           updateRegisterOperand(instr, 0, result, BOTTOM);
         break;
@@ -295,14 +359,22 @@ struct WhileConstant : public WhileDataFlowAnalysis<WhileConstantDomain>
     return result;
   }
 
-  static WhileConstantValue join(const WhileConstantValue &a,
-                                 const WhileConstantValue &b)
+  static WhileRangeValue join(const WhileRangeValue &a,
+                                 const WhileRangeValue &b)
   {
-    if (a.Kind == TOP)
+    if (a.Kind == TOP && b.Kind == CONSTANT)
       return b;
-    else if (b.Kind == TOP)
+    else if (b.Kind == TOP && a.Kind == CONSTANT)
       return a;
     else if (a == b)
+      return a;
+    else if( a.Kind == CONSTANT && b.Kind == CONSTANT)
+    {
+      int newLowerValue = std::min(a.lowerValue, b.lowerValue);
+      int newUpperValue = std::max(a.upperValue, b.upperValue);
+      return WhileRangeValue{a.Kind, newLowerValue, newUpperValue};
+    } 
+    else if (a.Kind == b.Kind)
       return a;
     else
       return BOTTOM;
@@ -315,7 +387,7 @@ struct WhileConstant : public WhileDataFlowAnalysis<WhileConstantDomain>
     {
       for(const auto&[idx, value] : r)
       {
-        WhileConstantValue &resultvalue = result[idx];
+        WhileRangeValue &resultvalue = result[idx];
         resultvalue = join(resultvalue, value);
       }
     }
@@ -325,7 +397,7 @@ struct WhileConstant : public WhileDataFlowAnalysis<WhileConstantDomain>
 };
 
 
-struct WhileConstantRegisterAnalysis : public WhileAnalysis
+struct WhileValueRangeAnalysis : public WhileAnalysis
 {
   void analyze(const WhileProgram &p) override
   {
@@ -334,10 +406,10 @@ struct WhileConstantRegisterAnalysis : public WhileAnalysis
     WCRA.dump(std::cout, p);
   };
 
-  WhileConstantRegisterAnalysis() : WhileAnalysis("WVRA",
+  WhileValueRangeAnalysis() : WhileAnalysis("WVRA",
                                                   "Value Register Analysis")
   {
   }
 };
 
-WhileConstantRegisterAnalysis WCRA;
+WhileValueRangeAnalysis WVRA;

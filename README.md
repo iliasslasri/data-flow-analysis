@@ -10,3 +10,5 @@
                     DEAD if not
 
 ## Combined Dead Code and Constant Analysis 
+
+    To run this analysis, make sure we don't compile '''WhileValueRangeAnalysis.cc''' (comment it in the CMakeLists.txt), then do the same for '''WhileConstantDeadAnalysis.cc''' to run the Value Range Analysis.
