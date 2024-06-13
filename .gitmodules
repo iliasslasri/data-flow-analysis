@@ -1,0 +1,3 @@
+[submodule "tp-tdd/CMock"]
+	path = tp-tdd/CMock
+	url = https://github.com/ThrowTheSwitch/CMock.git
