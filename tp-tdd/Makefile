@@ -17,7 +17,7 @@ SRCS=$(wildcard src/*.c)
 # Add your tests here!
 # =============================================================
 TESTS 	= TestLightScheduler
-#TESTS		+= TestLightControlSpy
+TESTS		+= TestLightControlSpy
 
 
 # =============================================================
