@@ -13,6 +13,11 @@ void LightControl_on(int id){
     lastState = LIGHT_ON;
 }
 
+void LightControl_off(int id){
+    lastLightId = id;
+    lastState = LIGHT_OFF;
+}
+
 void LightControl_destroy(void){
     lastLightId = LIGHT_ID_UNKNOWN;
     lastState = LIGHT_STATE_UNKNOWN;
