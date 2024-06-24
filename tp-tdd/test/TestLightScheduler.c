@@ -57,9 +57,9 @@ void test_LightScheduler_Destroy(void)
 void test_LightScheduler_AddEvent_incresing_Number_of_events(void)
 {
     setUp();
-    TEST_ASSERT_EQUAL(1, LightScheduler_AddEvent(1, (Time){THURDSDAY , 1100}, LIGHT_ON));
+    TEST_ASSERT_EQUAL(1, LightScheduler_AddEvent(1, (Time){THURDSDAY , 1100}, TURN_LIGHT_ON));
     
-    TEST_ASSERT_EQUAL(2, LightScheduler_AddEvent(1, (Time){MONDAY, 1150}, LIGHT_ON));
+    TEST_ASSERT_EQUAL(2, LightScheduler_AddEvent(1, (Time){MONDAY, 1150}, TURN_LIGHT_ON));
     tearDown();
 }
 
@@ -68,7 +68,7 @@ void test_LightScheduler_TurningOn(void)
 {
     setUp();
     Time time = {FRIDAY, 110};
-    LightScheduler_AddEvent(1, time, LIGHT_ON);
+    LightScheduler_AddEvent(1, time, TURN_LIGHT_ON);
 
     getTime_And_WakeUp(time);
 
@@ -77,7 +77,7 @@ void test_LightScheduler_TurningOn(void)
 
     // Another random time
     Time time2 = {THURDSDAY, 120};
-    LightScheduler_AddEvent(2, time2, LIGHT_ON);
+    LightScheduler_AddEvent(2, time2, TURN_LIGHT_ON);
 
     getTime_And_WakeUp(time2);
 
@@ -91,7 +91,7 @@ void test_LightScheduler_TurningOff(void)
 {
     setUp();
     Time time2 = {MONDAY, 120};
-    LightScheduler_AddEvent(2, time2, LIGHT_OFF);
+    LightScheduler_AddEvent(2, time2, TURN_LIGHT_OFF);
 
     getTime_And_WakeUp(time2);
 
@@ -106,28 +106,28 @@ void test_LightScheduler_AddEvent_And_TurningOn_MultipleEvents(void)
 {
     setUp();
     Time time1 = {FRIDAY, 10};
-    LightScheduler_AddEvent(1, time1, LIGHT_ON);
+    LightScheduler_AddEvent(1, time1, TURN_LIGHT_ON);
 
     Time time2 = {MONDAY, 20};
-    LightScheduler_AddEvent(2, time2, LIGHT_ON);
+    LightScheduler_AddEvent(2, time2, TURN_LIGHT_ON);
 
     Time time3 = {TUESDAY, 130};
-    LightScheduler_AddEvent(3, time3, LIGHT_ON);
+    LightScheduler_AddEvent(3, time3, TURN_LIGHT_ON);
 
     Time time4 = {WEDNESDAY, 990};
-    LightScheduler_AddEvent(4, time4, LIGHT_ON);
+    LightScheduler_AddEvent(4, time4, TURN_LIGHT_ON);
 
     Time time5 = {THURDSDAY, 500};
-    LightScheduler_AddEvent(5, time5, LIGHT_ON);
+    LightScheduler_AddEvent(5, time5, TURN_LIGHT_ON);
 
     Time time6 = {FRIDAY, 110};
-    LightScheduler_AddEvent(6, time6, LIGHT_ON);
+    LightScheduler_AddEvent(6, time6, TURN_LIGHT_ON);
 
     Time time7 = {SATURDAY, 0};
-    LightScheduler_AddEvent(7, time7, LIGHT_ON);
+    LightScheduler_AddEvent(7, time7, TURN_LIGHT_ON);
 
     Time time8 = {SUNDAY, 500};
-    LightScheduler_AddEvent(8, time8, LIGHT_ON);
+    LightScheduler_AddEvent(8, time8, TURN_LIGHT_ON);
 
     getTime_And_WakeUp(time1);
     TEST_ASSERT_EQUAL(1, LightControlSpy_getLastState());
@@ -168,7 +168,7 @@ void test_LightScheduler_checkingID(void)
 {
     setUp();
     Time time = {FRIDAY, 1100};
-    LightScheduler_AddEvent(1, time, LIGHT_ON);
+    LightScheduler_AddEvent(1, time, TURN_LIGHT_ON);
 
     getTime_And_WakeUp(time);
 
@@ -182,10 +182,10 @@ void test_LightScheduler_IdConstraints_Out_Of_Range(void)
 {
     setUp();
     Time time = {THURDSDAY, 1100};
-    TEST_ASSERT_EQUAL(-1, LightScheduler_AddEvent(-1, time, LIGHT_ON));
-    TEST_ASSERT_EQUAL(-1, LightScheduler_AddEvent(-200, time, LIGHT_ON));
-    TEST_ASSERT_EQUAL(-1, LightScheduler_AddEvent(256, time, LIGHT_ON));
-    TEST_ASSERT_EQUAL(-1, LightScheduler_AddEvent(270, time, LIGHT_ON));
+    TEST_ASSERT_EQUAL(-1, LightScheduler_AddEvent(-1, time, TURN_LIGHT_ON));
+    TEST_ASSERT_EQUAL(-1, LightScheduler_AddEvent(-200, time, TURN_LIGHT_ON));
+    TEST_ASSERT_EQUAL(-1, LightScheduler_AddEvent(256, time, TURN_LIGHT_ON));
+    TEST_ASSERT_EQUAL(-1, LightScheduler_AddEvent(270, time, TURN_LIGHT_ON));
     tearDown();
 }
 
@@ -194,9 +194,9 @@ void test_LightScheduler_IDConstraints_In_Range(void)
 {
     setUp();
     Time time = {THURDSDAY, 1100};
-    TEST_ASSERT_EQUAL(1, LightScheduler_AddEvent(255, time, LIGHT_ON));
+    TEST_ASSERT_EQUAL(1, LightScheduler_AddEvent(255, time, TURN_LIGHT_ON));
 
-    TEST_ASSERT_EQUAL(2, LightScheduler_AddEvent(0, time, LIGHT_ON));
+    TEST_ASSERT_EQUAL(2, LightScheduler_AddEvent(0, time, TURN_LIGHT_ON));
     tearDown();
 }
 
@@ -204,7 +204,7 @@ void test_LightScheduler_IDConstraints_In_Range(void)
 void test_LightScheduler_NoActionNeededtoTurnOn(void){
     setUp();
     Time time = {THURDSDAY, 200};
-    LightScheduler_AddEvent(1, time, LIGHT_ON);
+    LightScheduler_AddEvent(1, time, TURN_LIGHT_ON);
 
     getTime_And_WakeUp(time);
     TEST_ASSERT_EQUAL(1, LightControlSpy_getLastState());
@@ -216,20 +216,20 @@ void test_LightScheduler_NoActionNeededtoTurnOn(void){
 }
 
 /// test 8
-void test_LightScheduler_1minute(void){
+void test_LightScheduler_Xminute(void){
 
     setUp();
     Time time = {THURDSDAY, 200};
-    LightScheduler_AddEvent(1, time, LIGHT_ON);
+    LightScheduler_AddEvent(1, time, TURN_LIGHT_ON);
 
     getTime_And_WakeUp(time);
 
     TEST_ASSERT_EQUAL(1, LightControlSpy_getLastState());
 
-    time.minuteOfDay = 201;
+    time.minuteOfDay = 204;
     getTime_And_WakeUp(time);
     
-    TEST_ASSERT_EQUAL(0, LightControlSpy_getLastState());
+    TEST_ASSERT_EQUAL(1, LightControlSpy_getLastState());
     tearDown();
 }
 
@@ -237,24 +237,12 @@ void test_LightScheduler_1minute(void){
 void test_LightScheduler_EveryDayEvent(void){
     setUp();
     Time time = {EVERYDAY, 1430};
-    LightScheduler_AddEvent(1, time, LIGHT_ON);
+    LightScheduler_AddEvent(1, time, TURN_LIGHT_ON);
 
     time.dayOfWeek = MONDAY;
     getTime_And_WakeUp(time);
 
     TEST_ASSERT_EQUAL(1, LightControlSpy_getLastState());
-
-    time.minuteOfDay = 1431;
-    getTime_And_WakeUp(time);
-    
-    TEST_ASSERT_EQUAL(0, LightControlSpy_getLastState());
-
-    time.dayOfWeek = SATURDAY;
-    time.minuteOfDay = 1430;
-    getTime_And_WakeUp(time);
-
-    TEST_ASSERT_EQUAL(1, LightControlSpy_getLastState());
-
     tearDown();
 }
 
@@ -262,7 +250,7 @@ void test_LightScheduler_EveryDayEvent(void){
 void test_LightScheduler_Light_State_Unkonwn_When_Creating_Event(void){
     setUp();
     Time time = {EVERYDAY, 1200};
-    LightScheduler_AddEvent(1, time, LIGHT_OFF);
+    LightScheduler_AddEvent(1, time, TURN_LIGHT_OFF);
 
     TEST_ASSERT_EQUAL(-1, LightControlSpy_getLastState());
     tearDown();
@@ -272,7 +260,7 @@ void test_LightScheduler_Light_State_Unkonwn_When_Creating_Event(void){
 void test_LightScheduler_WeekendEvent(void){
     setUp();
     Time time = {WEEKEND, 900};
-    LightScheduler_AddEvent(0, time, LIGHT_ON);
+    LightScheduler_AddEvent(0, time, TURN_LIGHT_ON);
 
     time.dayOfWeek = SATURDAY;
     time.minuteOfDay = 900;
@@ -288,14 +276,22 @@ void test_LightScheduler_WeekendEvent(void){
 void test_LightScheduler_WeekdayEvent(void){
     setUp();
     Time time = {WEEKDAY, 500};
-    LightScheduler_AddEvent(0, time, LIGHT_ON);
+    LightScheduler_AddEvent(0, time, TURN_LIGHT_ON);
 
     time.dayOfWeek = MONDAY;
-    time.minuteOfDay = 500;
     getTime_And_WakeUp(time);
 
     TEST_ASSERT_EQUAL(1, LightControlSpy_getLastState());
 
+    time.dayOfWeek = FRIDAY;
+    getTime_And_WakeUp(time);
+
+    TEST_ASSERT_EQUAL(1, LightControlSpy_getLastState());
+
+    time.dayOfWeek = TUESDAY;
+    getTime_And_WakeUp(time);
+
+    TEST_ASSERT_EQUAL(1, LightControlSpy_getLastState());
     tearDown();
 }
 
@@ -305,11 +301,11 @@ void test_LightScheduler_MultipleEvents_for_same_lightID(void){
     setUp();
     // event 1, for light 1
     Time time = {WEEKEND, 1200};
-    LightScheduler_AddEvent(1, time, LIGHT_ON);
+    LightScheduler_AddEvent(1, time, TURN_LIGHT_ON);
 
     // event 2, for light 1
     time.dayOfWeek = MONDAY;
-    LightScheduler_AddEvent(1, time, LIGHT_ON);
+    LightScheduler_AddEvent(1, time, TURN_LIGHT_ON);
 
     getTime_And_WakeUp(time);
 
@@ -328,9 +324,9 @@ void test_LightScheduler_MultipleEvents_for_same_lightID(void){
 void test_LightScheduler_Same_Multiple_Events(void){
     setUp();
     Time time = {MONDAY, 1300};
-    LightScheduler_AddEvent(1, time, LIGHT_ON);
+    LightScheduler_AddEvent(1, time, TURN_LIGHT_ON);
 
-    TEST_ASSERT_EQUAL(-1, LightScheduler_AddEvent(1, time, LIGHT_ON));
+    TEST_ASSERT_EQUAL(-1, LightScheduler_AddEvent(1, time, TURN_LIGHT_ON));
 
     tearDown();
 }
@@ -340,7 +336,7 @@ void test_LightScheduler_RemoveEvent(void){
     setUp();
     Time time = {SUNDAY, 800};
 
-    TEST_ASSERT_EQUAL(1, LightScheduler_AddEvent(1, time, LIGHT_ON));
+    TEST_ASSERT_EQUAL(1, LightScheduler_AddEvent(1, time, TURN_LIGHT_ON));
     TEST_ASSERT_EQUAL(0, LightScheduler_RemoveEvent(1, time));
 
     tearDown();
@@ -350,7 +346,7 @@ void test_LightScheduler_RemoveEvent(void){
 void test_LightScheduler_RemoveEvent_With_Unknown_Event(void){
     setUp();
     Time time = {TUESDAY, 1000};
-    TEST_ASSERT_EQUAL(1, LightScheduler_AddEvent(1, time, LIGHT_ON));
+    TEST_ASSERT_EQUAL(1, LightScheduler_AddEvent(1, time, TURN_LIGHT_ON));
     TEST_ASSERT_EQUAL(0, LightScheduler_RemoveEvent(1, time));
 
     TEST_ASSERT_EQUAL(-1, LightScheduler_RemoveEvent(1, time));
@@ -364,10 +360,10 @@ void test_LightScheduler_Maximum_Events(void){
     Time time = {THURDSDAY, 0};
     for (int i = 0; i < 256; i++){
         time.minuteOfDay = i;
-        LightScheduler_AddEvent(0, time, LIGHT_ON);
+        LightScheduler_AddEvent(0, time, TURN_LIGHT_ON);
     }
 
-    TEST_ASSERT_EQUAL(-1, LightScheduler_AddEvent(0, time, LIGHT_ON));
+    TEST_ASSERT_EQUAL(-1, LightScheduler_AddEvent(0, time, TURN_LIGHT_ON));
     tearDown();
 }
 
@@ -377,7 +373,7 @@ void test_LightScheduler_Maximum_Events_With_Remove(void){
     Time time = {MONDAY, 0};
     for (int i = 0; i < 256; i++){
         time.minuteOfDay = i;
-        LightScheduler_AddEvent(0, time, LIGHT_ON);
+        LightScheduler_AddEvent(0, time, TURN_LIGHT_ON);
     }
 
     for (int i = 0; i < 256; i++){
@@ -385,7 +381,7 @@ void test_LightScheduler_Maximum_Events_With_Remove(void){
         LightScheduler_RemoveEvent(0, time);
     }
 
-    TEST_ASSERT_EQUAL(1, LightScheduler_AddEvent(0, time, LIGHT_ON));
+    TEST_ASSERT_EQUAL(1, LightScheduler_AddEvent(0, time, TURN_LIGHT_ON));
     tearDown();
 }
 
@@ -395,7 +391,7 @@ void test_LightScheduler_Maximum_Events_With_Remove_Unknown_Event(void){
     Time time = {MONDAY, 0};
     for (int i = 0; i < 256; i++){
         time.minuteOfDay = i;
-        LightScheduler_AddEvent(0, time, LIGHT_ON);
+        LightScheduler_AddEvent(0, time, TURN_LIGHT_ON);
     }
 
     for (int i = 0; i < 256; i++){
@@ -411,14 +407,14 @@ void test_LightScheduler_Maximum_Events_With_Remove_Unknown_Event(void){
 void test_LightScheduler_MinuteOfDay_Out_Of_Range(void){
     setUp();
     Time time = {MONDAY, 1440};
-    TEST_ASSERT_EQUAL(-1, LightScheduler_AddEvent(0, time, LIGHT_ON));
+    TEST_ASSERT_EQUAL(-1, LightScheduler_AddEvent(0, time, TURN_LIGHT_ON));
 
     time.minuteOfDay = -1;
-    TEST_ASSERT_EQUAL(-1, LightScheduler_AddEvent(0, time, LIGHT_ON));
+    TEST_ASSERT_EQUAL(-1, LightScheduler_AddEvent(0, time, TURN_LIGHT_ON));
     tearDown();
 }
 
-/// test 21 : state_trigger is not LIGHT_ON or LIGHT_OFF
+/// test 21 : state_trigger is not TURN_LIGHT_ON or TURN_LIGHT_OFF
 void test_LightScheduler_StateTrigger(void){
     setUp();
     Time time = {MONDAY, 200};
@@ -431,34 +427,34 @@ void test_LightScheduler_StateTrigger(void){
 void test_LightScheduler_DayOfWeek_Out_Of_Range(void){
     setUp();
     Time time = {0, 200};
-    TEST_ASSERT_EQUAL(-1, LightScheduler_AddEvent(0, time, LIGHT_ON));
+    TEST_ASSERT_EQUAL(-1, LightScheduler_AddEvent(0, time, TURN_LIGHT_ON));
 
     time.dayOfWeek = 8;
-    TEST_ASSERT_EQUAL(-1, LightScheduler_AddEvent(0, time, LIGHT_ON));
+    TEST_ASSERT_EQUAL(-1, LightScheduler_AddEvent(0, time, TURN_LIGHT_ON));
 
     time.dayOfWeek = -1;
-    TEST_ASSERT_EQUAL(-1, LightScheduler_AddEvent(0, time, LIGHT_ON));
+    TEST_ASSERT_EQUAL(-1, LightScheduler_AddEvent(0, time, TURN_LIGHT_ON));
 
     time.dayOfWeek = 13;
-    TEST_ASSERT_EQUAL(-1, LightScheduler_AddEvent(0, time, LIGHT_ON));
+    TEST_ASSERT_EQUAL(-1, LightScheduler_AddEvent(0, time, TURN_LIGHT_ON));
 
     tearDown();
 }
 
 /// test 24
-void test_LightScheduler_Successive_Events_Same_Light_on(void){
+void test_LightScheduler_Successive_Events_Same_TURN_LIGHT_ON(void){
     setUp();
-    Time time = {MONDAY, 200};
-    LightScheduler_AddEvent(1, time, LIGHT_ON);
+    Time time = {MONDAY, 1000};
+    LightScheduler_AddEvent(1, time, TURN_LIGHT_ON);
 
-    time.minuteOfDay = 201;
-    LightScheduler_AddEvent(1, time, LIGHT_ON);
+    time.minuteOfDay = 1010;
+    LightScheduler_AddEvent(1, time, TURN_LIGHT_ON);
 
-    time.minuteOfDay = 200;
+    time.minuteOfDay = 1000;
     getTime_And_WakeUp(time);
     TEST_ASSERT_EQUAL(1, LightControlSpy_getLastState());
 
-    time.minuteOfDay = 201;
+    time.minuteOfDay = 1010;
     getTime_And_WakeUp(time);
 
     TEST_ASSERT_EQUAL(1, LightControlSpy_getLastState());
@@ -466,13 +462,13 @@ void test_LightScheduler_Successive_Events_Same_Light_on(void){
     tearDown();
 }
 
-void test_LightScheduler_Successive_Events_Same_Light_off(void){
+void test_LightScheduler_Successive_Events_Same_TURN_LIGHT_OFF(void){
     setUp();
     Time time = {4, 0};
-    LightScheduler_AddEvent(1, time, LIGHT_OFF);
+    LightScheduler_AddEvent(1, time, TURN_LIGHT_OFF);
 
     time.minuteOfDay = 1;
-    LightScheduler_AddEvent(1, time, LIGHT_OFF);
+    LightScheduler_AddEvent(1, time, TURN_LIGHT_OFF);
 
     time.minuteOfDay = 0;
     getTime_And_WakeUp(time);
@@ -486,14 +482,15 @@ void test_LightScheduler_Successive_Events_Same_Light_off(void){
     tearDown();
 }
 
+/// test 25
 void test_LightScheduler_Multiple_Events_Contradicting_States(void){
     setUp();
     Time time = {MONDAY, 200};
-    LightScheduler_AddEvent(1, time, LIGHT_ON);
+    LightScheduler_AddEvent(1, time, TURN_LIGHT_ON);
 
     time.minuteOfDay = 200;
 
-    TEST_ASSERT_EQUAL(-1, LightScheduler_AddEvent(1, time, LIGHT_OFF));
+    TEST_ASSERT_EQUAL(-1, LightScheduler_AddEvent(1, time, TURN_LIGHT_OFF));
 
     tearDown();
 }

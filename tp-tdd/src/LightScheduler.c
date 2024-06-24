@@ -22,15 +22,9 @@ int LightScheduler_Create(void)
         events[i].state = 0;
     }
 
-    int handler = TimeService_startPeriodicAlarm(60, &LightScheduler_WakeUp);
-    if (handler)
-    {
-        return 1;
-    }
-    else
-    {
-        return 0;
-    }
+    // should return the handler to be able to stop the alarm
+    TimeService_startPeriodicAlarm(60, &LightScheduler_WakeUp);
+    return 1;
 }
 
 int LightScheduler_Destroy(void)
@@ -54,7 +48,7 @@ int LightScheduler_AddEvent(int id, Time time, int state_trigger)
     if( id < 0 || id > 255){
         return -1;
     }
-    if( state_trigger != LIGHT_ON && state_trigger != LIGHT_OFF){
+    if( state_trigger != TURN_LIGHT_ON && state_trigger != TURN_LIGHT_OFF){
         return -1;
     }
 
@@ -98,14 +92,10 @@ int LightScheduler_RemoveEvent(int id, Time time)
 
 /// @brief Helper function to handle the activation of the event, if the event is active, it will be set down, otherwise it will be set up
 void activation_helper(event_t *event, Time time){
-    if(event->active == 1){ // if the event is active, meaning the light is triggered, change its state to the original state after 1min
-        if((event->time.minuteOfDay + 1) == time.minuteOfDay){
-            light_handler_setdown(event);
-            event->active = 0;
-        }
-    }
     if(event->time.minuteOfDay == time.minuteOfDay){
-        light_handler_setup(event);
+        if (event->state == TURN_LIGHT_ON){
+            LightControl_on(event->light_id);
+        } else { LightControl_off(event->light_id); }
         event->active = 1;
     }
 }
@@ -139,24 +129,4 @@ void LightScheduler_WakeUp(void)
             break;
         }        
     }
-}
-
-/// @brief  Helper functions to handle the setup and setdown of the light
-
-void light_handler_setup(event_t *event)
-{
-    if (event->state == LIGHT_ON){
-        LightControl_on(event->light_id);
-    }
-    else
-        LightControl_off(event->light_id);
-}
-
-void light_handler_setdown(event_t *event)
-{
-    if (event->state == LIGHT_ON){
-        LightControl_off(event->light_id);
-    }
-    else
-        LightControl_on(event->light_id);
 }

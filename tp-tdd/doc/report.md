@@ -1,5 +1,6 @@
 # Report for TDD Exercise
 
+
 #### Requirements
 
 1. Test the intialisation of the LightScheduler :
@@ -46,12 +47,11 @@
     - check if the Light object is on in the appropriate time.
     - check if the Light object is off in the appropriate time.
 
-8. The user can schedule an event to turn on a light at a specific time but just around 1 minute.
+8. The user can schedule an event to turn on a light at a specific time but just around X minute ( When one event is shheduled)
 
     - create a LightScheduler
     - create an event with a specific time to turn on the light.
-    - check if the Light is on at the scheduled time
-    - check if the Light is off at the scheduled time + 1min
+    - check if the Light is on at the scheduled time and after X minutes
 
 9. The user can schedule switching a light on or off every day at a specific time.
 
@@ -72,7 +72,6 @@
     - create a Light 
     - iterate over the days of the weekend and schedule the Light object to turn on at XX for instance
     - check if the Light object is on at XX for each day of the weekend
-    - check if the Light object is off at XX + 1min for each day of the weekend
 
 12. The user can schedule switching a light on or off during week days (Monday till Friday).
 
@@ -80,7 +79,6 @@
     - create a Light object
     - iterate over the days of the week and schedule the Light object to turn on at XX for instance
     - check if the Light object is on at XX for each day of the week
-    - check if the Light object is off at XX + 1min for each day of the week
   
 13. The user can schedule multiple events for the same light.
 
@@ -88,10 +86,8 @@
     - create LightTimeEvents for the same ID, with different times.
       - schedule the Light is turned on at XX for instance
       - schedule the Light object to turn off at YY, time different from XX
-    - check if the Light object is on at XX
-    - check if the Light object is off at XX + 1min
-    - check if the Light object is off at YY
-    - check if the Light object is on at YY + 1min
+    - check that the Light object is on at XX
+    - check that the Light object is off at YY
 
 14. The user cannot schedule the same event twice
 
@@ -157,11 +153,11 @@
 
     - create a LightScheduler
     - create an event at XX to turn on the light
-    - create an event at XX+1min turn on the light
+    - create an event at XX+Ymin turn on the light
     - check if the Light object is on at XX
-    - check if the Light object is on at XX+1min
+    - check if the Light object is on at XX+Ymin
 
-25. The user cannot create multiple events with contradictory states for the same Light object.
+25. The user cannot create multiple events with contradictory states for the same Light object at the same Light.
 
     - create a LightScheduler
     - create an event at XX to turn on the light

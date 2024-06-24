@@ -14,6 +14,12 @@ typedef struct
     int state; // the action
 } event_t;
 
+enum
+{
+    TURN_LIGHT_OFF = 0,
+    TURN_LIGHT_ON = 1
+};
+
 int LightScheduler_Create(void);
 int LightScheduler_Destroy(void);
 int LightScheduler_AddEvent(int, Time, int);
