@@ -23,7 +23,7 @@ TESTS		+= TestLightControlSpy
 # =============================================================
 # Modules to mock
 # =============================================================
-TOMOCK =
+TOMOCK = TimeService
 
 
 MOCKDIR=./mocks
