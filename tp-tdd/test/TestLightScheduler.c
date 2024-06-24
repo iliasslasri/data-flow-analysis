@@ -361,8 +361,9 @@ void test_LightScheduler_RemoveEvent_With_Unknown_Event(void){
 /// test 17
 void test_LightScheduler_Maximum_Events(void){
     setUp();
-    Time time = {THURDSDAY, 200};
+    Time time = {THURDSDAY, 0};
     for (int i = 0; i < 256; i++){
+        time.minuteOfDay = i;
         LightScheduler_AddEvent(0, time, LIGHT_ON);
     }
 
@@ -375,10 +376,12 @@ void test_LightScheduler_Maximum_Events_With_Remove(void){
     setUp();
     Time time = {MONDAY, 0};
     for (int i = 0; i < 256; i++){
+        time.minuteOfDay = i;
         LightScheduler_AddEvent(0, time, LIGHT_ON);
     }
 
     for (int i = 0; i < 256; i++){
+        time.minuteOfDay = i;
         LightScheduler_RemoveEvent(0, time);
     }
 
@@ -391,10 +394,12 @@ void test_LightScheduler_Maximum_Events_With_Remove_Unknown_Event(void){
     setUp();
     Time time = {MONDAY, 0};
     for (int i = 0; i < 256; i++){
+        time.minuteOfDay = i;
         LightScheduler_AddEvent(0, time, LIGHT_ON);
     }
 
     for (int i = 0; i < 256; i++){
+        time.minuteOfDay = i;
         LightScheduler_RemoveEvent(0, time);
     }
 
