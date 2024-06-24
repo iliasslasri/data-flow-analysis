@@ -11,11 +11,10 @@ typedef struct
     int active; // 0 : inactive, 1 : active , this means that the light is triggered if 1
     int light_id;
     Time time;
-    int state;
+    int state; // the action
 } event_t;
 
 int LightScheduler_Create(void);
-int LightScheduler_GetState(void);
 int LightScheduler_Destroy(void);
 int LightScheduler_AddEvent(int, Time, int);
 void LightScheduler_WakeUp(void);

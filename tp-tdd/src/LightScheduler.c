@@ -1,20 +1,19 @@
 #include "LightScheduler.h"
 
 
-// 0 : "Light Scheduler OFF", 1 : "Light Scheduler ON"
-static int STATE = 0;
 static int NUMBER_OF_SCHEDULES = 0;
 
-event_t events[256] = {0};
+event_t events[256];
 
 static int handler = 0;
 
 int LightScheduler_Create(void)
 {
     LightControl_init();
-    STATE = 1;
-    NUMBER_OF_SCHEDULES = 0;
+    TimeService_init();
     
+    NUMBER_OF_SCHEDULES = 0;
+
     for (int i = 0; i < 256; i++){
         events[i].active = 0;
         events[i].light_id = 0;
@@ -37,11 +36,12 @@ int LightScheduler_Create(void)
 int LightScheduler_Destroy(void)
 {
     TimeService_stopPeriodicAlarm(handler);
+    TimeService_destroy();
+
     LightControl_destroy();
 
-    STATE = 0;
     NUMBER_OF_SCHEDULES = 0;
-    return STATE;
+    return 1;
 }
 
 /// @brief add an event to the schedule
@@ -58,6 +58,13 @@ int LightScheduler_AddEvent(int id, Time time, int state_trigger)
         return -1;
     }
 
+    if(time.minuteOfDay < 0 || time.minuteOfDay >= 1440){
+        return -1;
+    }
+
+    if(time.dayOfWeek < 1 || (time.dayOfWeek > 7 && time.dayOfWeek != 10 && time.dayOfWeek != 11 && time.dayOfWeek != 12)){
+        return -1;
+    }
     // check the event is not already in the schedule
     for (int i = 0; i < NUMBER_OF_SCHEDULES; i++){
         if(events[i].light_id == id && events[i].time.dayOfWeek == time.dayOfWeek && events[i].time.minuteOfDay == time.minuteOfDay){
@@ -96,11 +103,10 @@ void activation_helper(event_t *event, Time time){
             light_handler_setdown(event);
             event->active = 0;
         }
-    } else {
-        if(event->time.minuteOfDay == time.minuteOfDay){
-            light_handler_setup(event);
-            event->active = 1;
-        }
+    }
+    if(event->time.minuteOfDay == time.minuteOfDay){
+        light_handler_setup(event);
+        event->active = 1;
     }
 }
 
