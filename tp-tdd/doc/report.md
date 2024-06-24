@@ -89,11 +89,11 @@
     - check that the Light object is on at XX
     - check that the Light object is off at YY
 
-14. The user cannot schedule the same event twice
+14. The user can schedule the same event twice
 
     - create a LightScheduler
     - create an event with a specific time to turn on the light
-    - check that the creating a second event with the same time fails
+    - check that the creating a second event with the same time succeeds, and that the number of scheduled does not increase
 
 15. The user can remove a scheduled event.
 
@@ -157,9 +157,10 @@
     - check if the Light object is on at XX
     - check if the Light object is on at XX+Ymin
 
-25. The user cannot create multiple events with contradictory states for the same Light object at the same Light.
+25. The user can create multiple events with contradictory states for the same Light object at the same Light, but the last event should be the one that is executed, so we delete the previous event.
 
     - create a LightScheduler
     - create an event at XX to turn on the light
-    - create an event at XX to turn off the light
-    - check that creating the second event fails
+    - create an event at YY to turn off the light
+    - check that creating the second event deletes the first event
+    - check that the Light object is off at YY

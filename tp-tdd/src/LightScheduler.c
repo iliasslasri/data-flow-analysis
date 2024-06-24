@@ -62,7 +62,8 @@ int LightScheduler_AddEvent(int id, Time time, int state_trigger)
     // check the event is not already in the schedule
     for (int i = 0; i < NUMBER_OF_SCHEDULES; i++){
         if(events[i].light_id == id && events[i].time.dayOfWeek == time.dayOfWeek && events[i].time.minuteOfDay == time.minuteOfDay){
-            return -1;
+            events[i].state = state_trigger;
+            return NUMBER_OF_SCHEDULES;
         }
     }
 

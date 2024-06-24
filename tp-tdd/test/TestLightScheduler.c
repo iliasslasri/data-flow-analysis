@@ -326,7 +326,7 @@ void test_LightScheduler_Same_Multiple_Events(void){
     Time time = {MONDAY, 1300};
     LightScheduler_AddEvent(1, time, TURN_LIGHT_ON);
 
-    TEST_ASSERT_EQUAL(-1, LightScheduler_AddEvent(1, time, TURN_LIGHT_ON));
+    TEST_ASSERT_EQUAL(1, LightScheduler_AddEvent(1, time, TURN_LIGHT_ON));
 
     tearDown();
 }
@@ -490,7 +490,10 @@ void test_LightScheduler_Multiple_Events_Contradicting_States(void){
 
     time.minuteOfDay = 200;
 
-    TEST_ASSERT_EQUAL(-1, LightScheduler_AddEvent(1, time, TURN_LIGHT_OFF));
+    LightScheduler_AddEvent(1, time, TURN_LIGHT_OFF);
+
+    getTime_And_WakeUp(time);
+    TEST_ASSERT_EQUAL(0, LightControlSpy_getLastState());
 
     tearDown();
 }
